@@ -1,0 +1,17 @@
+{
+    "name": "bsp-nucleo-f446",
+    "version": "1.0.0",
+    "keywords": "",
+    "description": "A board support package for stm32 nucleo f446 based projects.",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/fjulian79/libgeneric.git"
+    },
+    "frameworks": "*",
+    "platforms": "*",
+    "dependencies": 
+    {
+      "libgeneric": "https://github.com/fjulian79/libgeneric.git#master"
+    }
+}
