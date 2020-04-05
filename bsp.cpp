@@ -24,11 +24,11 @@
 #include <stm32f4xx_ll_rcc.h>
 #include <stm32f4xx_ll_system.h>
 #include <stm32f4xx_ll_utils.h>
-#include "stm32f4xx_ll_bus.h"
+#include <stm32f4xx_ll_bus.h>
 
 #include "bsp/bsp.h"
-//#include "bsp/bsp_gpio.h"
-//#include "bsp/bsp_tty.h"
+#include "bsp/bsp_gpio.h"
+#include "bsp/bsp_tty.h"
 
 #if BSP_SYSTICK == BSP_ENABLED
 
@@ -68,7 +68,7 @@ static inline void bspClockInit(void)
 {
     int clk = 0;
 
-    LL_FLASH_SetLatency(LL_FLASH_LATENCY_2);
+    LL_FLASH_SetLatency(LL_FLASH_LATENCY_3);
 
 #ifndef BSP_CLOCKSRC_HSI
 
@@ -77,16 +77,13 @@ static inline void bspClockInit(void)
     
     while(LL_RCC_HSE_IsReady() != 1);
 
-    LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE_DIV_1, LL_RCC_PLL_MUL_9);
-    clk = 72000000;
+    LL_RCC_PLL_ConfigDomain_SYS(
+        LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_8, 400, LL_RCC_PLLP_DIV_4);
+    clk = 100000000;
 
 #else
 
-    LL_RCC_HSI_Enable();
-    while(LL_RCC_HSI_IsReady() != 1);
-
-    LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI_DIV_2, LL_RCC_PLL_MUL_16);
-    clk = 64000000;
+    #error HSI not supported so far.
 
 #endif
 

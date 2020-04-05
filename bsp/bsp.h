@@ -2,7 +2,7 @@
  * bsp-nucleo-f446, a generic board support package for nucleo-f446 based
  * projects.
  *
- * Copyright (C) 2020 Julian Friedrich
+ * Copyright (C) 2019 Julian Friedrich
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>. 
  *
- * You can file issues at https://github.com/fjulian79/bsp-smartsink
+ * You can file issues at https://github.com/fjulian79/bsp-nucleo-f446
  */
 
 #ifndef BSP_NUCLEO_F446_H_
