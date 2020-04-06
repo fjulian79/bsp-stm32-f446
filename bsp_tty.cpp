@@ -59,16 +59,16 @@ Fifo *pTxFifo;
  */
 void startDmaTx(uint8_t *pData, size_t siz)
 {
-//    LL_DMA_SetMemoryAddress(DMA1, TTY_TXDMACH_LLCH, (uint32_t)pData);
-//    LL_DMA_SetDataLength(DMA1, TTY_TXDMACH_LLCH, siz);
-//    LL_USART_EnableDMAReq_TX(TTY_USARTx);
-//    LL_DMA_EnableChannel(DMA1, TTY_TXDMACH_LLCH);
+    LL_DMA_SetMemoryAddress(DMA1, TTY_TXDMA_STR, (uint32_t)pData);
+    LL_DMA_SetDataLength(DMA1, TTY_TXDMA_STR, siz);
+    LL_USART_EnableDMAReq_TX(TTY_USARTx);
+    LL_DMA_EnableStream(DMA1, TTY_TXDMA_STR);
 }
 
 /**
  * TTY Tx DMA Interrupt handler.
  */
-extern "C" void TTY_TXDMACH_IRQHandler(void)
+extern "C" void TTY_TXDMA_STR_IRQHandler(void)
 {
     uint8_t *ptr = NULL;
 
@@ -77,7 +77,7 @@ extern "C" void TTY_TXDMACH_IRQHandler(void)
         TTY_TXDMACH_CLEARFLAG_TC();
 
         LL_USART_DisableDMAReq_TX(TTY_USARTx);
-        LL_DMA_DisableChannel(DMA1, TTY_TXDMACH_LLCH);
+        LL_DMA_DisableStream(DMA1, TTY_TXDMA_STR);
 
         pTxFifo->free(ttyTxData.TxBytes);
         ttyTxData.TxBytes = pTxFifo->getReadBlock((void**)&ptr);
@@ -106,7 +106,7 @@ struct
 {
     char Data[BSP_TTY_RX_BUFSIZ];
     uint32_t NumLost;
-    
+
 } ttyRxData;
 
 /**
@@ -149,7 +149,7 @@ extern "C" int _write(int file, char *pData, int siz)
 
     do
     {
-        NVIC_DisableIRQ(TTY_TXDMACH_IRQn);
+        NVIC_DisableIRQ(TTY_TXDMA_STR_IRQn);
 
         if ((siz - tmp) == 1)
             tmp += pTxFifo->put(pData + tmp);
@@ -162,7 +162,7 @@ extern "C" int _write(int file, char *pData, int siz)
             startDmaTx(ptr, ttyTxData.TxBytes);
         }
 
-        NVIC_EnableIRQ(TTY_TXDMACH_IRQn);
+        NVIC_EnableIRQ(TTY_TXDMA_STR_IRQn);
 
 #if BSP_TTY_BLOCKING == BSP_ENABLED
 
@@ -245,6 +245,8 @@ void bspTTYInit(uint32_t baud)
     ttyTxData.NumLost = 0;
     pTxFifo = new Fifo(ttyTxData.Data, sizeof(ttyTxData.Data));
 
+    LL_DMA_StructInit(&dma);
+    dma.Channel = TTY_TXDMA_CH;
     dma.Mode = LL_DMA_MODE_NORMAL;
     dma.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
     dma.Priority = LL_DMA_PRIORITY_HIGH;
@@ -253,12 +255,12 @@ void bspTTYInit(uint32_t baud)
     dma.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_BYTE;
     dma.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_BYTE;
     dma.PeriphOrM2MSrcAddress = LL_USART_DMA_GetRegAddr(TTY_USARTx);
-    LL_DMA_Init(DMA1, TTY_TXDMACH_LLCH, &dma);
+    LL_DMA_Init(DMA1, TTY_TXDMA_STR, &dma);
 
-    NVIC_SetPriority(TTY_TXDMACH_IRQn, 0);
-    NVIC_EnableIRQ(TTY_TXDMACH_IRQn);
-    LL_DMA_EnableIT_TC(DMA1, TTY_TXDMACH_LLCH);
-    LL_DMA_EnableIT_TE(DMA1, TTY_TXDMACH_LLCH);
+    NVIC_SetPriority(TTY_TXDMA_STR_IRQn, 0);
+    NVIC_EnableIRQ(TTY_TXDMA_STR_IRQn);
+    LL_DMA_EnableIT_TC(DMA1, TTY_TXDMA_STR);
+    LL_DMA_EnableIT_TE(DMA1, TTY_TXDMA_STR);
 
 #endif /* BSP_TTY_TX_DMA == BSP_ENABLED */
 }

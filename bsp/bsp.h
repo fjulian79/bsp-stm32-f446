@@ -54,12 +54,12 @@
 
 /* Hence that the DMA channel to use is hard coded by ST.
  * See DMA channel assignment table below. */
-#define TTY_TXDMACH                         DMA1_Channel7
-#define TTY_TXDMACH_IRQn                    DMA1_Channel7_IRQn
-#define TTY_TXDMACH_IRQHandler              DMA1_Channel7_IRQHandler
-#define TTY_TXDMACH_LLCH                    LL_DMA_CHANNEL_7
-#define TTY_TXDMACH_ISACTIVEFLAG_TC()       LL_DMA_IsActiveFlag_TC7(DMA1)
-#define TTY_TXDMACH_CLEARFLAG_TC()          LL_DMA_ClearFlag_TC7(DMA1)
+#define TTY_TXDMA_STR                       LL_DMA_STREAM_6
+#define TTY_TXDMA_CH                        LL_DMA_CHANNEL_4
+#define TTY_TXDMA_STR_IRQn                  DMA1_Stream6_IRQn
+#define TTY_TXDMA_STR_IRQHandler            DMA1_Stream6_IRQHandler
+#define TTY_TXDMACH_ISACTIVEFLAG_TC()       LL_DMA_IsActiveFlag_TC6(DMA1)
+#define TTY_TXDMACH_CLEARFLAG_TC()          LL_DMA_ClearFlag_TC6(DMA1)
 
 /**
  * DMA channel assignment from ST.
