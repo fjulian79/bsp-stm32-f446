@@ -2,7 +2,7 @@
  * bsp-nucleo-f446, a generic board support package for nucleo-f446 based
  * projects.
  *
- * Copyright (C) 2019 Julian Friedrich
+ * Copyright (C) 2020 Julian Friedrich
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include "bsp/bsp.h"
 
 /**
- * @brief Definition of gpio pins.
+ * @brief Gerneric pin definitions.
  */
 #define BSP_GPIO_PIN_0                      (LL_GPIO_PIN_0)
 #define BSP_GPIO_PIN_1                      (LL_GPIO_PIN_1)
@@ -57,10 +57,9 @@
 #define BSP_IOMAPVAL(_port, _pin)           ((_port << 16) + _pin)
 
 /**
- * @brief Descriptor of all gpio pins. 
- * 
- * Hence that some of those names might be overwritten in bsp.h as there special
- * function pins names will be mapped the the generic gpio names.
+ * @brief Descriptor of all gpio pins. Hence that some of those names might be
+ * overwritten in bsp.h as there special function pins names will be mapped
+ * the the generic gpio names.
  */
 typedef enum
 {
@@ -217,17 +216,14 @@ typedef enum
  * @param init  Parameters to use. Hence the pin number given by this struct
  *              will be overwritten by the number derived from the pin ID.
  */
-void bspGpioPinInit(
-        bspGpioPin_t pin,
-        LL_GPIO_InitTypeDef *init);
+void bspGpioPinInit(bspGpioPin_t pin, LL_GPIO_InitTypeDef *init);
 
 /**
  * @brief Used to initialize gpio pins used by the bsp internally.
  * 
  * E.g. tty, led, buttons, etc.
  */
-void bspGpioInit(
-        void);
+void bspGpioInit(void);
 
 /**
  * @brief Sets the given gpio pins to high.
@@ -237,8 +233,7 @@ void bspGpioInit(
  * 
  * @param pin   The bsp gpio pin ID.
  */
-void bspGpioSet(
-        bspGpioPin_t pin);
+void bspGpioSet(bspGpioPin_t pin);
 
 /**
  * @brief Sets the given gpio pin to low.
@@ -248,8 +243,7 @@ void bspGpioSet(
  * 
  * @param pin
  */
-void bspGpioClear(
-        bspGpioPin_t pin);
+void bspGpioClear(bspGpioPin_t pin);
 
 /**
  * @brief Toggels the given gpio pins.
@@ -259,8 +253,7 @@ void bspGpioClear(
  * 
  * @param pin   The bsp gpio pin ID.
  */
-void bspGpioToggle(
-        bspGpioPin_t pin);
+void bspGpioToggle(bspGpioPin_t pin);
 
 /**
  * @brief Sets the given gpio pins based on the given value.
@@ -269,9 +262,7 @@ void bspGpioToggle(
  * @param val   If true the pins will be set to high.
  *              If false the pins will become low.
  */
-void bspGpioWrite(
-        bspGpioPin_t pin,
-        bool val);
+void bspGpioWrite(bspGpioPin_t pin, uint32_t val);
 
 /**
  * @brief Used to read the given gpio pins.
@@ -284,7 +275,6 @@ void bspGpioWrite(
  * @return  true    if the pin is high.
  *          false   if the pin is low.
  */
-bool bspGpioRead(
-        bspGpioPin_t pin);
+bool bspGpioRead(bspGpioPin_t pin);
 
 #endif /* BSP_NUCLEO_F446_GPIO_H_ */

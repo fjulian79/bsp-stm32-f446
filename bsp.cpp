@@ -17,9 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>. 
  *
- * You can file issues at https://github.com/fjulian79/bsp-smartsink
+ * You can file issues at https://github.com/fjulian79/bsp-nucleo-f446
  */
-
 
 #include <stm32f4xx_ll_rcc.h>
 #include <stm32f4xx_ll_system.h>
@@ -29,12 +28,18 @@
 #include "bsp/bsp.h"
 #include "bsp/bsp_gpio.h"
 #include "bsp/bsp_tty.h"
+#include "bsp/bsp_exti.h"
+
+inline bool bspIsInterrupt(void)
+{
+    return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0 ;
+}
 
 #if BSP_SYSTICK == BSP_ENABLED
 
 /**
- * The bsp controls the sys tick. We have to maintain the tick counter, enable
- * the interrupt and implement it
+ * @brief The bsp controls the sys tick. We have to maintain the tick counter, 
+ * enable the interrupt and implement it
  */
 volatile uint32_t sysTick = 0;
 
@@ -62,7 +67,7 @@ void bspDelayMs(uint32_t delay)
 #endif /* BSP_SYSTICK == BSP_ENABLED */
 
 /**
- * All clock´s shall be managed here to keep the big picture.
+ * @brief All clock´s shall be managed here to keep the big picture.
  */
 static inline void bspClockInit(void)
 {
@@ -104,9 +109,12 @@ static inline void bspClockInit(void)
 #if BSP_SYSTICK == BSP_ENABLED
 
     SysTick->CTRL  |= SysTick_CTRL_TICKINT_Msk;
-    NVIC_SetPriority(SysTick_IRQn, BSP_SYSTICK_IRQ_PRIO);
+    NVIC_SetPriority(SysTick_IRQn, BSP_IRQPRIO_SYSTICK);
 
 #endif /* BSP_SYSTICK == BSP_ENABLED */
+
+    /* For external interrupts we need SYSCFG */
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG); 
 
     /* DMA is used for the tty etc. */
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
@@ -124,5 +132,12 @@ void bspChipInit(void)
 
     /* Configure the tty */
     bspTTYInit(BSP_TTY_BAUDRATE);
+
+    /* External interrupts (Button)*/
+    bspExtiInit();
 }
 
+void bspResetCpu(void)
+{
+    NVIC_SystemReset();
+}

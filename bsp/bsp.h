@@ -2,7 +2,7 @@
  * bsp-nucleo-f446, a generic board support package for nucleo-f446 based
  * projects.
  *
- * Copyright (C) 2019 Julian Friedrich
+ * Copyright (C) 2020 Julian Friedrich
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <stm32f4xx_ll_utils.h>
 
 /**
- * Special GPIO Pin definitions
+ * @brief Definition of used GPIO lines.
  */
 #ifndef BSP_GPIO_A5
 #define BSP_GPIO_A5                         BSP_GPIO_LED
@@ -41,7 +41,14 @@
 #endif
 
 /**
- * TTY configuration
+ * @brief Definitions of external interrupt lines.
+ */
+#define BSP_BUTTON_EXTI_LINE                LL_EXTI_LINE_13
+#define BSP_BUTTON_GPIO_EXTI_PORT           LL_SYSCFG_EXTI_PORTC
+#define BSP_BUTTON_GPIO_EXTI_LINE           LL_SYSCFG_EXTI_LINE13 
+
+/**
+ * @brief TTY configuration
  */
 #define TTY_USARTx                          USART2
 #define TTY_USARTx_CLK_ENABLE()             LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2)
@@ -52,8 +59,10 @@
 #define TTY_USARTx_IRQn                     USART2_IRQn
 #define TTY_USARTx_IRQHandler               USART2_IRQHandler
 
-/* Hence that the DMA channel to use is hard coded by ST.
- * See DMA channel assignment table below. */
+/**
+ * @brief Hence that the DMA channel to use is hard coded by ST.
+ * See DMA channel assignment table below. 
+ */
 #define TTY_TXDMA_STR                       LL_DMA_STREAM_6
 #define TTY_TXDMA_CH                        LL_DMA_CHANNEL_4
 #define TTY_TXDMA_STR_IRQn                  DMA1_Stream6_IRQn
@@ -62,8 +71,9 @@
 #define TTY_TXDMACH_CLEARFLAG_TC()          LL_DMA_ClearFlag_TC6(DMA1)
 
 /**
- * DMA channel assignment from ST.
- * Hence that this hard coded and can not be changed!
+ * @brief DMA channel assignment from ST.
+ * 
+ * Please enote that this hard coded and can not be changed!
  */
 #define BSP_DMACH_ADC1                      DMA1_Channel1
 
@@ -111,27 +121,28 @@
 #define BSP_DMAIRQn(_ch)                    _ch##_IRQn
 #define BSP_DMAIRQHandler(_ch)              _ch##_IRQHandler
 
-/*
- * Interrupt configuration
- * */
 #ifndef __NVIC_PRIO_BITS
+
 /*
- * __NVIC_PRIO_BITS should be specified when CMSIS is being used.
+ * @brief __NVIC_PRIO_BITS should be specified when CMSIS is being used.
+ * 
  * 7 priority levels as default
  * */
 #define __NVIC_PRIO_BITS                    3
+
 #endif
 
-/*
- * Lower values mean higher priorities, see EFM32 app note AN0039.
+/**
+ * @brief Lower values mean higher priorities, see EFM32 app note AN0039.
  */
 #define BSP_IRQPRIO_MAX                     0x00
 
 #ifndef BSP_IRQPRIO_FREERTOS_SYSCALL
 
 /**
- * The highest interrupt priority that can be used by any interrupt service
- * routine that makes calls to interrupt safe FreeRTOS API functions.
+ * @brief The highest interrupt priority that can be used by any interrupt 
+ * service routine that makes calls to interrupt safe FreeRTOS API functions.
+ * 
  * DO NOT CALL INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT
  * HAS A HIGHER PRIORITY THAN THIS!
  */
@@ -140,14 +151,15 @@
 #endif
 
 /**
- * The lowest interrupt priority that can be used in a call to a
+ * @brief The lowest interrupt priority that can be used in a call to a
  * NVIC_SetPriority() function. Given by the fact that there are only
  * tree priority bits.
- * */
+ */
 #define BSP_IRQPRIO_MIN                     0x07
 
 /**
- * Generic type used as return value for public BSP functions where applicable.
+ * @brief Generic type used as return value for public BSP functions where 
+ * applicable.
  */
 typedef enum
 {
@@ -162,6 +174,7 @@ typedef enum
       BSP_ENEMPTY,          ///<! is not empty 
       BSP_ERANGE,           ///<! Range violation
       BSP_ESIZE             ///<! Size violation
+      
 } bspStatus_t;
 
 #if BSP_SYSTICK == BSP_ENABLED
@@ -169,14 +182,14 @@ typedef enum
 #define BSP_MAX_DELAY                       UINT32_MAX
 
 /**
- * Used to the current sys tick counter value.
+ * @brief Used to the current sys tick counter value.
  *
  * @return  The sys tick value.
  */
 uint32_t bspGetSysTick(void);
 
 /**
- * Used to implement a busy waiting delay for the given amount of time.
+ * @brief Used to implement a busy waiting delay for the given amount of time.
  *
  * @param delay     The delay in ms.
  */
@@ -187,7 +200,7 @@ void bspDelayMs(uint32_t delay);
 #ifndef bspDelayMs
 
 /**
- *  As last resort use the stm32cube ll implementation of a delay.
+ * @brief As last resort use the stm32cube ll implementation of a delay.
  */
 #define bspDelayMs                          LL_mDelay
 
@@ -196,9 +209,21 @@ void bspDelayMs(uint32_t delay);
 #endif /* BSP_SYSTICK == BSP_ENABLED */
 
 /**
- * Used to implement generic chip initialization
+ * @brief Used to check if the current code is executed in the context of a 
+ * interrupt.
+ * 
+ * ATTENTION: Not tested yet!
  */
-void bspChipInit(
-      void);
+bool bspInInterrupt(void);
+
+/**
+ * @brief Used to implement generic chip initialization
+ */
+void bspChipInit(void);
+
+/**
+ * @brief used to trigger a CPU reset.
+ */
+void bspResetCpu(void);
 
 #endif /* BSP_NUCLEO_F446_H_ */

@@ -2,7 +2,7 @@
  * bsp-nucleo-f446, a generic board support package for nucleo-f446 based
  * projects.
  *
- * Copyright (C) 2019 Julian Friedrich
+ * Copyright (C) 2020 Julian Friedrich
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,14 +26,14 @@
 #include "bsp/bsp.h"
 
 /**
- * Used to setup the usart.
+ * @brief Used to setup the usart.
  *
  * @param baud the desired baud rate
  */
 void bspTTYInit(uint32_t baud);
 
 /**
- * Used to transmit any data.
+ * @brief Used to transmit any data.
  *
  * @param pData     Pointer to the data to transmit.
  * @param siz       Number of bytes.
@@ -43,7 +43,7 @@ void bspTTYInit(uint32_t baud);
 bspStatus_t bspTTYSendData(uint8_t *pData, uint16_t siz);
 
 /**
- * Used to check if there is data available on the TTY.
+ * @brief Used to check if there is data available on the TTY.
  *
  * @return  true if there date.
  *          false it there is no data
@@ -51,11 +51,25 @@ bspStatus_t bspTTYSendData(uint8_t *pData, uint16_t siz);
 bool bspTTYDataAvailable(void);
 
 /**
- * Used to read a single character from the TTY.
+ * @brief Used to read a single character from the TTY.
+ * 
  * Hence that this function will block.
  *
  * @return  The read character.
  */
 char bspTTYGetChar(void);
+
+#if BSP_ASSERT_MESSAGE == BSP_ENABLED
+
+/**
+ * @brief Used to print a assert message from any possible context.
+ * 
+ * This function can be assumed to prevent the tty from working as usual. The 
+ * root cause for that behaviour is that this function as to work in any 
+ * possible context, also in every interrupt.
+ */
+void bspTTYAssertMessage(char *pChar);
+
+#endif /* BSP_ASSERT_MESSAGE == BSP_ENABLED */
 
 #endif /* BSP_NUCLEO_F446_TTY_H_ */
